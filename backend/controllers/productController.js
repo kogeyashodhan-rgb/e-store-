@@ -1,0 +1,48 @@
+const Product = require('../models/Product');
+const mongoose = require('mongoose');
+
+const productsList = [
+  { _id: '1', name: 'Apple iPhone 15 Pro Max', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=500&q=80', description: 'Experience the best of Apple.', brand: 'Apple', category: 'Mobiles', price: 134900, discount: 5, rating: 4.8, numReviews: 125, countInStock: 10 },
+  { _id: '2', name: 'Sony Mirrorless Camera', image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&q=80', description: 'Professional grade photography.', brand: 'Sony', category: 'Electronics', price: 85900, discount: 10, rating: 4.6, numReviews: 89, countInStock: 5 },
+  { _id: '3', name: 'Nike Air Max', image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=500&q=80', description: 'Comfort and style combined.', brand: 'Nike', category: 'Fashion', price: 12990, discount: 15, rating: 4.5, numReviews: 210, countInStock: 20 },
+  { _id: '4', name: 'LG OLED TV 55"', image: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=500&q=80', description: 'Stunning 4K visuals.', brand: 'LG', category: 'Appliances', price: 145000, discount: 12, rating: 4.9, numReviews: 67, countInStock: 3 },
+  { _id: '5', name: 'Samsung Galaxy S24 Ultra', image: 'https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=500&q=80', description: 'The ultimate Android phone.', brand: 'Samsung', category: 'Mobiles', price: 129999, discount: 8, rating: 4.7, numReviews: 156, countInStock: 12 },
+  { _id: '6', name: 'MacBook Air M2', image: 'https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?w=500&q=80', description: 'Supercharged by M2.', brand: 'Apple', category: 'Electronics', price: 114900, discount: 81, rating: 4.9, numReviews: 230, countInStock: 8 },
+  { _id: '7', name: 'Sony WH-1000XM5', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80', description: 'Industry leading noise cancellation.', brand: 'Sony', category: 'Electronics', price: 29900, discount: 81, rating: 4.7, numReviews: 450, countInStock: 15 },
+  { _id: '8', name: 'Nike Jordan Retro', image: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=500&q=80', description: 'Classic street style.', brand: 'Nike', category: 'Fashion', price: 18990, discount: 81, rating: 4.8, numReviews: 312, countInStock: 5 },
+  { _id: '9', name: 'Samsung Odyssey G8', image: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&q=80', description: 'Ultra-wide gaming experience.', brand: 'Samsung', category: 'Electronics', price: 124500, discount: 81, rating: 4.9, numReviews: 88, countInStock: 4 },
+  { _id: '10', name: 'Dyson V15 Detect', image: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=500&q=80', description: 'Most powerful cordless vacuum.', brand: 'Dyson', category: 'Appliances', price: 65900, discount: 81, rating: 4.6, numReviews: 120, countInStock: 7 }
+];
+
+const getProducts = async (req, res) => {
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const products = await Product.find({});
+      if (products.length > 0) {
+        return res.json({ products, page: 1, pages: 1 });
+      }
+    } catch (error) {
+      console.log('DB Fetch Error, falling back to mock.');
+    }
+  }
+  res.json({ products: productsList, page: 1, pages: 1 });
+};
+
+const getProductById = async (req, res) => {
+  if (mongoose.connection.readyState === 1) {
+    try {
+      const product = await Product.findById(req.params.id);
+      if (product) {
+        return res.json(product);
+      }
+    } catch (error) {
+      console.log('DB Fetch Error, falling back to mock.');
+    }
+  }
+  
+  const mockProduct = productsList.find(p => p._id === req.params.id);
+  if (mockProduct) res.json(mockProduct);
+  else res.status(404).json({ message: 'Product not found' });
+};
+
+module.exports = { getProducts, getProductById };
